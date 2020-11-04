@@ -1,17 +1,26 @@
-import React, {Component} from 'react';
-import {ImageBackground, View, Text, StyleSheet, Button} from 'react-native';
-import 'firebase/firestore';
-import * as firebase from 'firebase';
+import React, { createContext } from "react";
+
+import firebase from "firebase";
+import "firebase/auth";
+import "firebase/firestore";
+import config from "../config/firebase";
 import * as Google from 'expo-google-app-auth';
 
-const colors = {
-    primary: "darksalmon",
-    secondary: "oldnavy",
+const FirebaseContext = createContext();
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(config);
 }
 
-class LoginScreen extends Component {
+const db = firebase.firestore();
 
-    isUserEqual = (googleUser, firebaseUser) => {
+const Firebase = {
+
+    getCurrentUser: () => {
+        return firebase.auth().currentUser;
+    },
+
+    isUserEqual : (googleUser, firebaseUser) => {
         if (firebaseUser) {
           var providerData = firebaseUser.providerData;
           for (var i = 0; i < providerData.length; i++) {
@@ -23,15 +32,15 @@ class LoginScreen extends Component {
           }
         }
         return false;
-      }
+    },
 
-    onSignIn = (googleUser) => {
+    onSignIn : (googleUser) => {
         console.log('Google Auth Response', googleUser);
         // We need to register an Observer on Firebase Auth to make sure auth is initialized.
         var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
-          unsubscribe();
-          // Check if we are already signed-in Firebase with the correct user.
-          if (!this.isUserEqual(googleUser, firebaseUser)) {
+        unsubscribe();
+        // Check if we are already signed-in Firebase with the correct user.
+        if (!Firebase.isUserEqual(googleUser, firebaseUser)) {
             // Build Firebase credential with the Google ID token.
             var credential = firebase.auth.GoogleAuthProvider.credential(
                 googleUser.idToken, googleUser.accessToken);
@@ -65,22 +74,22 @@ class LoginScreen extends Component {
                 }
             })
             .catch(function(error) {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              // The email of the user's account used.
-              var email = error.email;
-              // The firebase.auth.AuthCredential type that was used.
-              var credential = error.credential;
-              // ...
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
             });
-          } else {
+        } else {
             console.log('User already signed-in Firebase.');
-          }
-        }.bind(this));
-      }
+        }
+        }.bind(Firebase));
+    },
 
-    signInWithGoogleAsync = async() => {
+    signInWithGoogleAsync : async() => {
         try {
             console.log("TRYING");
           const result = await Google.logInAsync({
@@ -90,7 +99,7 @@ class LoginScreen extends Component {
           });
       
           if (result.type === 'success') {
-              this.onSignIn(result);
+              Firebase.onSignIn(result);
               console.log("SUCCESS")
             return result.accessToken;
           } else {
@@ -100,55 +109,62 @@ class LoginScreen extends Component {
         } catch (e) {
           return { error: true };
         }
-      }
+    },
 
-    render() {
-        return (
-            <ImageBackground style={styles.background} source={require("../assets/DressRoom.jpg")}>
-            <View style={styles.registerButton}>
-            <Button title="Sign in with Google" onPress={() => { 
-                console.log("SIGN IN WITH GOOGLE PRESSED");
-                this.signInWithGoogleAsync()}}
-            />
-            </View>
-            <View style={styles.loginButton}>
-            <Button title="Sign in with Facebook" onPress={() => { 
-                console.log("SIGN IN WITH FACEBOOK PRESSED");}}
-            />
-            </View>
-            </ImageBackground>
-          );
-        // return (
-        //     <View style={styles.container}>
-        //         <Button
-        //         title="Sign in with Google"
-        //         onPress={() => {
-        //             console.log("PRESSED");
-        //             this.signInWithGoogleAsync()}}
-        //         />
-        //     </View>
-        // );
-    }
-    
-    
-    
+    uploadProfilePhoto: async (uri) => {
+        const uid = Firebase.getCurrentUser().uid;
+
+        try {
+            const photo = await Firebase.getBlob(uri);
+
+            const imageRef = firebase.storage().ref("profilePhotos").child(uid);
+            await imageRef.put(photo);
+
+            const url = await imageRef.getDownloadURL();
+
+            await db.collection("users").doc(uid).update({
+                profilePhotoUrl: url,
+            });
+
+            return url;
+        } catch (error) {
+            console.log("Error @uploadProfilePhoto: ", error);
+        }
+    },
+
+    getBlob: async (uri) => {
+        return await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+
+            xhr.onload = () => {
+                resolve(xhr.response);
+            };
+
+            xhr.onerror = () => {
+                reject(new TypeError("Network request failed."));
+            };
+
+            xhr.responseType = "blob";
+            xhr.open("GET", uri, true);
+            xhr.send(null);
+        });
+    },
+
+    logOut: async () => {
+        try {
+            await firebase.auth().signOut();
+            console.log("Successfully signed out");
+            return true;
+        } catch (error) {
+            console.log("Error @logOut: ", error);
+        }
+        return false;
+    },
 }
 
-export default LoginScreen;
 
-const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        justifyContent: "flex-end",
-    },
-    loginButton: {
-        width: "100%",
-        height: 59,
-        backgroundColor: 'pink',
-    },
-    registerButton: {
-        width: "100%",
-        height: 59,
-        backgroundColor: 'white',
-    },
-});
+const FirebaseProvider = (props) => {
+return <FirebaseContext.Provider value={Firebase}>{props.children}</FirebaseContext.Provider>
+}
+
+export { FirebaseContext, FirebaseProvider };

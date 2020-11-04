@@ -1,12 +1,39 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useContext }  from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import styled from "styled-components";
 
-export default class ProfileScreen extends React.Component {
-    render() {
-      return(
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#d0d0d0'}}>
-          <Text> This is my Profile screen </Text>
-        </View>
-      );
+import { UserContext } from "../context/UserContext";
+import { FirebaseContext } from "../context/FirebaseContext";
+
+export default ProfileScreen = () => {
+
+  const [user, setUser] = useContext(UserContext);
+  const firebase = useContext(FirebaseContext);
+
+  const logOut = async () => {
+    const loggedOut = await firebase.logOut();
+
+    if (loggedOut) {
+        setUser((state) => ({ ...state, isLoggedIn: false }));
     }
-  }
+  };
+      return(
+        <Container>
+          <Logout onPress={logOut}>
+          <Text medium bold color="#23a8d9">
+              Log out
+          </Text>
+        </Logout>
+        </Container>
+      );
+}
+
+const Container = styled.View`
+    align-items: center;
+    margin-top: 64px;
+    flex: 1;
+`;
+
+const Logout = styled.TouchableOpacity`
+    margin-bottom: 32px;
+`;

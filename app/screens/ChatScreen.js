@@ -1,12 +1,18 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-export default class ChatScreen extends React.Component {
-    render() {
+export default ChatScreen = () => {
       return(
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
+        <View style={styles.container}>
           <Text> This is my Chat screen </Text>
         </View>
       );
-    }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center'
   }
+});

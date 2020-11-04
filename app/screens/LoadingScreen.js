@@ -1,36 +1,42 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
-import firebase from 'firebase';
+import React, { useEffect, useContext } from 'react';
+import styled from 'styled-components'
+import LottieView from "lottie-react-native";
 
-class LoadingScreen extends Component {
+import Text from "../components/Text";
+import {UserContext} from "../context/UserContext"
 
-    componentDidMount() {
-        this.checkIfLoggedIn();
-    }
+export default LoadingScreen = () => {
 
-    checkIfLoggedIn = () => {
+    console.log(UserContext)
 
-        firebase.auth().onAuthStateChanged(user => {
-            user ? this.props.navigation.navigate('DashboardScreen') : this.props.navigation.navigate('LoginScreen');
-        })
-    }
+    const [_, setUser] = useContext(UserContext)
+
+    useEffect(() => {
+        setTimeout(async ()  => {
+            setUser((state) => ({...state, isLoggedIn: false}))
+        }, 1500)
+    }, [])
 
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large"/>
-            </View>
-        );
-    }
+    return (
+        <Container>
+            <Text title color="#000000">
+                fetch
+            </Text>
+
+            <LottieView
+                source={require("../assets/loadingAnimation.json")}
+                autoPlay
+                loop
+                style={{ width: "100%" }}
+            />
+        </Container>
+    );
 }
 
-export default LoadingScreen;
-
-const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        alignItems:'center',
-        justifyContent: 'center'
-    }
-});
+const Container = styled.View`
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFFFFF;
+`;
