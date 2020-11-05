@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { FirebaseContext } from "../context/FirebaseContext";
 import { UserContext } from "../context/UserContext";
 
+// import * as Facebook from 'expo-facebook';
+
 import Text from "../components/Text";
 
 export default SignInScreen = ({ navigation }) => {
@@ -12,7 +14,7 @@ export default SignInScreen = ({ navigation }) => {
     const firebase = useContext(FirebaseContext);
     const [_, setUser] = useContext(UserContext);
 
-    const signIn = async () => {
+    const signInGoogle = async () => {
         setLoading(true); 
         
         try {
@@ -22,11 +24,53 @@ export default SignInScreen = ({ navigation }) => {
                 isLoggedIn: true,
             });
         } catch (error) {
-            alert.errorMessage();
+            alert(error.message);
         } finally {
             setLoading(false);
         }
     }
+
+    const signInFacebook = async () => {
+        setLoading(true); 
+        
+        try {
+            await firebase.signInWithFacebook();
+            setUser({
+                isLoggedIn: true,
+            });
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // async function logIn() {
+    //     console.log("Facebook login called");
+    //     try {
+    //       await Facebook.initializeAsync({
+    //         appId: '1291192777894833',
+    //       });
+    //       const {
+    //         type,
+    //         token,
+    //         expirationDate,
+    //         permissions,
+    //         declinedPermissions,
+    //       } = await Facebook.logInWithReadPermissionsAsync({
+    //         permissions: ['public_profile'],
+    //       });
+    //       if (type === 'success') {
+    //         // Get the user's name using Facebook's Graph API
+    //         const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+    //         alert(`Hi ${(await response.json()).name}!`);
+    //       } else {
+    //         // type === 'cancel'
+    //       }
+    //     } catch ({ message }) {
+    //       alert(`Facebook Login Error: ${message}`);
+    //     }
+    // }
 
     return (
         <Container>
@@ -34,14 +78,14 @@ export default SignInScreen = ({ navigation }) => {
                 <Text huge semi center>fetch</Text>
             </Main>
             <SignInContainer>
-            <GoogleSignIn onPress={signIn} disabled={loading}>
+            <GoogleSignIn onPress={signInGoogle} disabled={loading}>
                 {loading ? (
                         <Loading />
                     ) : (
                     <Text bold center>Sign In with Google</Text>
                     )}
                 </GoogleSignIn>
-                <FacebookSignIn disabled={loading}>
+                <FacebookSignIn onPress={signInFacebook} disabled={loading}>
                 {loading ? (
                         <Loading />
                     ) : (
