@@ -133,6 +133,11 @@ const Firebase = {
             // Get the user's name using Facebook's Graph API
             const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
             alert(`Hi ${(await response.json()).name}!`);
+            const credential = firebase.auth.FacebookAuthProvider.credential(token);
+            console.log("GOT THE CREDENTIAL", credential);
+            firebase.auth().signInWithCredential(credential).catch(error => {
+              console.log(error);
+            });
           } else {
             // type === 'cancel'
           }
