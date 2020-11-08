@@ -1,13 +1,28 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
+import { login } from '../redux/actions'
 
-export default HomeScreen = () => {
+function HomeScreen (props) {
+
+  useEffect(() => {
+    props.dispatch(login("Hello!"))
+  }, [])
+
       return(
         <View style={styles.container}>
-          <Text> This is my Home screen </Text>
+          <Text>{props.user}</Text>
         </View>
       );
 }
+
+function mapStateToProps(state) {
+  return {
+    user: state.user
+  };
+}
+
+export default connect(mapStateToProps)(HomeScreen);
 
 const styles = StyleSheet.create({
   container: {

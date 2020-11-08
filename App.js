@@ -1,6 +1,11 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-// const NavigationContainer = require('@react-navigation/native');
+import reducers from './app/redux/reducers';
+import thunkMiddleware from 'redux-thunk';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+const middleware = applyMiddleware(thunkMiddleware)
+const store = createStore(reducers, middleware);
 
 import { UserProvider } from "./app/context/UserContext";
 import { FirebaseProvider } from "./app/context/FirebaseContext";
@@ -9,13 +14,15 @@ import AppStackScreens from "./app/stacks/AppStackScreens";
 
 export default App = () => {
   return (
-    <FirebaseProvider>
-      <UserProvider>
-        <NavigationContainer>
-          <AppStackScreens />
-        </NavigationContainer>
-      </UserProvider>
-    </FirebaseProvider>
+    <Provider store={store}>
+      <FirebaseProvider>
+        <UserProvider>
+          <NavigationContainer>
+            <AppStackScreens />
+          </NavigationContainer>
+        </UserProvider>
+      </FirebaseProvider>
+    </Provider>
   );
 };
 

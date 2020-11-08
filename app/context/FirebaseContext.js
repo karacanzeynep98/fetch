@@ -66,7 +66,7 @@ const Firebase = {
                         created_at: Date.now()
                     })
                     .then(function(snapshot){
-                        console.log("This is SNAPSHOT", snapshot);
+                        // console.log("This is SNAPSHOT", snapshot);
                     });
                 } else {
                     firebase
