@@ -6,19 +6,19 @@ import { login } from '../redux/actions'
 function HomeScreen (props) {
 
   useEffect(() => {
-    props.dispatch(login("Hello!"))
+    console.log("These are my props", JSON.stringify(props));
   }, [])
 
       return(
         <View style={styles.container}>
-          <Text>{props.user}</Text>
+          <Text>Home</Text>
         </View>
       );
 }
 
 function mapStateToProps(state) {
   return {
-    user: state.user
+    loggedIn: state.loggedIn
   };
 }
 
@@ -31,3 +31,4 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 });
+

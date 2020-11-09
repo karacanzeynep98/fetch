@@ -1,14 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
+import { connect } from 'react-redux';
 
+import { login } from '../redux/actions'
 import { FirebaseContext } from "../context/FirebaseContext";
 import { UserContext } from "../context/UserContext";
 
-// import * as Facebook from 'expo-facebook';
-
 import Text from "../components/Text";
 
-export default SignInScreen = ({ navigation }) => {
+function SignInScreen (props) {
 
     const [loading, setLoading] = useState(false);
     const firebase = useContext(FirebaseContext);
@@ -20,9 +20,18 @@ export default SignInScreen = ({ navigation }) => {
         try {
             await firebase.signInWithGoogleAsync();
 
-            setUser({
-                isLoggedIn: true,
+
+            firebase.getFirebaseAuth().onAuthStateChanged(user => {
+                if (user != null) {
+                console.log("state = definitely signed in")
+                console.log("We are authenticated now!" + JSON.stringify(user));
+                props.dispatch(login(true));
+                setUser({
+                    isLoggedIn: true,
+                });
+              }
             });
+
         } catch (error) {
             alert(error.message);
         } finally {
@@ -38,39 +47,14 @@ export default SignInScreen = ({ navigation }) => {
             setUser({
                 isLoggedIn: true,
             });
+
+            props.dispatch(login(true));
         } catch (error) {
             alert(error.message);
         } finally {
             setLoading(false);
         }
     }
-
-    // async function logIn() {
-    //     console.log("Facebook login called");
-    //     try {
-    //       await Facebook.initializeAsync({
-    //         appId: '1291192777894833',
-    //       });
-    //       const {
-    //         type,
-    //         token,
-    //         expirationDate,
-    //         permissions,
-    //         declinedPermissions,
-    //       } = await Facebook.logInWithReadPermissionsAsync({
-    //         permissions: ['public_profile'],
-    //       });
-    //       if (type === 'success') {
-    //         // Get the user's name using Facebook's Graph API
-    //         const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-    //         alert(`Hi ${(await response.json()).name}!`);
-    //       } else {
-    //         // type === 'cancel'
-    //       }
-    //     } catch ({ message }) {
-    //       alert(`Facebook Login Error: ${message}`);
-    //     }
-    // }
 
     return (
         <Container>
@@ -94,7 +78,7 @@ export default SignInScreen = ({ navigation }) => {
                 </FacebookSignIn>
             </SignInContainer>
 
-            <SignUp onPress={() => navigation.navigate("SignUp")}>
+            <SignUp onPress={() => props.navigation.navigate("SignUp")}>
                 <Text medium center>Haven't fetched yet? <Text medium bold color="#917467" center>Take a look.</Text></Text>
             </SignUp>
 
@@ -104,6 +88,14 @@ export default SignInScreen = ({ navigation }) => {
         </Container>
     );
 };
+
+function mapStateToProps(state) {
+    return {
+      loggedIn: state.loggedIn
+    };
+}
+
+export default connect(mapStateToProps)(SignInScreen);
 
 const Container = styled.View`
     flex:1
@@ -145,3 +137,4 @@ const StatusBar = styled.StatusBar``;
 const SignUp = styled.TouchableOpacity`
     margin-top: 36px;
 `;
+

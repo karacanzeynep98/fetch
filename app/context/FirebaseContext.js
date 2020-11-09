@@ -22,6 +22,10 @@ const Firebase = {
     getCurrentUser: () => {
         return firebase.auth().currentUser;
     },
+    
+    getFirebaseAuth: () => {
+      return firebase.auth();
+    },
 
     isUserEqual : (googleUser, firebaseUser) => {
         if (firebaseUser) {
