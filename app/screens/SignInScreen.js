@@ -1,34 +1,131 @@
 import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import { connect } from 'react-redux';
-
 import { login } from '../redux/actions'
-import { FirebaseContext } from "../context/FirebaseContext";
-import { UserContext } from "../context/UserContext";
+
+import config from "../config/firebase";
+import firebase from "firebase";
+import "firebase/auth";
+import "firebase/firestore";
+import * as Google from 'expo-google-app-auth';
+import * as Facebook from 'expo-facebook';
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(config);
+}
 
 import Text from "../components/Text";
 
 function SignInScreen (props) {
 
     const [loading, setLoading] = useState(false);
-    const firebase = useContext(FirebaseContext);
-    const [_, setUser] = useContext(UserContext);
+
+    const isUserEqual = (googleUser, firebaseUser) => {
+        if (firebaseUser) {
+          var providerData = firebaseUser.providerData;
+          for (var i = 0; i < providerData.length; i++) {
+            if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+                providerData[i].uid === googleUser.getBasicProfile().getId()) {
+              // We don't need to reauth the Firebase connection.
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+    
+    const onSignIn = (googleUser) => {
+        console.log('Google Auth Response', googleUser);
+        // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+        var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
+          unsubscribe();
+          // Check if we are already signed-in Firebase with the correct user.
+          if (!isUserEqual(googleUser, firebaseUser)) {
+            // Build Firebase credential with the Google ID token.
+            var credential = firebase.auth.GoogleAuthProvider.credential(
+                googleUser.idToken, googleUser.accessToken);
+            // Sign in with credential from the Google user.
+            firebase
+            .auth()
+            .signInWithCredential(credential)
+            .then(function (result) {
+                console.log("User signed in");
+                if(result.additionalUserInfo.isNewUser) {
+                    firebase
+                    .database()
+                    .ref('/users'+result.user.uid)
+                    .set({
+                        gmail:result.user.email,
+                        profile_picture:result.additionalUserInfo.profile.picture,
+                        locale:result.additionalUserInfo.profile.locale,
+                        first_name:result.additionalUserInfo.profile.given_name,
+                        last_name:result.additionalUserInfo.profile.family_name,
+                        created_at: Date.now()
+                    })
+                    .then(function(snapshot){
+                        console.log("This is SNAPSHOT", snapshot);
+                    });
+                } else {
+                    firebase
+                    .database()
+                    .ref('/users'+result.user.uid).update({
+                        last_logged_in: Date.now()
+                    });
+                }
+            })
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // The email of the user's account used.
+              var email = error.email;
+              // The firebase.auth.AuthCredential type that was used.
+              var credential = error.credential;
+              // ...
+            });
+          } else {
+            console.log('User already signed-in Firebase.');
+          }
+        });
+    }
+
+    const signInWithGoogleAsync = async() => {
+        try {
+            console.log("TRYING");
+          const result = await Google.logInAsync({
+            //androidClientId: YOUR_CLIENT_ID_HERE,
+            iosClientId: '542847370188-24cvaip35jil9ae413rmb5inhnfslhle.apps.googleusercontent.com',
+            scopes: ['profile', 'email'],
+          });
+      
+          if (result.type === 'success') {
+              onSignIn(result);
+              console.log("SUCCESS")
+            return result.accessToken;
+          } else {
+              console.log("FAILED");
+            return { cancelled: true };
+          }
+        } catch (e) {
+          return { error: true };
+        }
+    }
 
     const signInGoogle = async () => {
         setLoading(true); 
         
         try {
-            await firebase.signInWithGoogleAsync();
+            await signInWithGoogleAsync();
 
-
-            firebase.getFirebaseAuth().onAuthStateChanged(user => {
+            firebase.auth().onAuthStateChanged(user => {
                 if (user != null) {
                 console.log("state = definitely signed in")
                 console.log("We are authenticated now!" + JSON.stringify(user));
-                props.dispatch(login(true));
-                setUser({
-                    isLoggedIn: true,
-                });
+                props.dispatch(login(user));
+                // setUser({
+                //     isLoggedIn: true,
+                // });
               }
             });
 
@@ -39,16 +136,51 @@ function SignInScreen (props) {
         }
     }
 
+    const signInWithFacebook = async () =>  {
+        console.log("Facebook login called");
+        try {
+          await Facebook.initializeAsync({
+            appId: '1291192777894833',
+          });
+          const {
+            type,
+            token,
+            expirationDate,
+            permissions,
+            declinedPermissions,
+          } = await Facebook.logInWithReadPermissionsAsync({
+            permissions: ['public_profile'],
+          });
+          if (type === 'success') {
+            // Get the user's name using Facebook's Graph API
+            const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+            alert(`Hi ${(await response.json()).name}!`);
+            const credential = firebase.auth.FacebookAuthProvider.credential(token);
+            console.log("GOT THE CREDENTIAL", credential);
+            firebase.auth().signInWithCredential(credential).catch(error => {
+              console.log(error);
+            });
+          } else {
+            // type === 'cancel'
+          }
+        } catch ({ message }) {
+          alert(`Facebook Login Error: ${message}`);
+        }
+    }
+
     const signInFacebook = async () => {
         setLoading(true); 
         
         try {
-            await firebase.signInWithFacebook();
-            setUser({
-                isLoggedIn: true,
-            });
+            await signInWithFacebook();
 
-            props.dispatch(login(true));
+            firebase.auth().onAuthStateChanged(user => {
+                if (user != null) {
+                console.log("state = definitely signed in")
+                console.log("We are authenticated now!" + JSON.stringify(user));
+                props.dispatch(login(user));
+              }
+            });
         } catch (error) {
             alert(error.message);
         } finally {

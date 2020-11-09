@@ -4,8 +4,10 @@ import LottieView from "lottie-react-native";
 
 import Text from "../components/Text";
 import {UserContext} from "../context/UserContext"
+import { connect } from 'react-redux';
+import { login } from '../redux/actions'
 
-export default LoadingScreen = () => {
+function LoadingScreen (props) {
 
     console.log(UserContext)
 
@@ -13,7 +15,8 @@ export default LoadingScreen = () => {
 
     useEffect(() => {
         setTimeout(async ()  => {
-            setUser((state) => ({...state, isLoggedIn: false}))
+            // setUser((state) => ({...state, isLoggedIn: false}))
+            props.dispatch(login(false));
         }, 1500)
     }, [])
 
@@ -40,3 +43,11 @@ const Container = styled.View`
     justify-content: center;
     background-color: #FFFFFF;
 `;
+
+function mapStateToProps(state) {
+    return {
+      loggedIn: state.loggedIn
+    };
+}
+
+export default connect(mapStateToProps)(LoadingScreen);
