@@ -1,14 +1,3 @@
-// export function login(user){
-//   return function(dispatch){
-//     dispatch({ type: 'LOGIN', user: user, loggedIn: true });
-//   }
-// }
-// export function login(input){
-//   return function(dispatch){
-//     dispatch({ type: 'LOGIN', payload: input });
-//   }
-// }
-
 import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
@@ -47,5 +36,6 @@ export function logout(){
 	return function(dispatch){
     firebase.auth().signOut()
     dispatch({ type: 'LOGOUT', loggedIn: false });
+    console.log("Successfully signed out");
    }
 }

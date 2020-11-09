@@ -1,41 +1,28 @@
 import React, { useContext }  from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import styled from "styled-components";
 import { connect } from 'react-redux';
-import { login, logout } from '../redux/actions'
-
-import { UserContext } from "../context/UserContext";
-import { FirebaseContext } from "../context/FirebaseContext";
-import { useLinkProps } from '@react-navigation/native';
-// import { useLinkProps } from '@react-navigation/native';
+import { logout } from '../redux/actions'
 
 function ProfileScreen (props) {
 
-  const [user, setUser] = useContext(UserContext);
-  const firebase = useContext(FirebaseContext);
-
-  const logOut = async () => {
-    const loggedOut = await firebase.logOut();
-
-    if (loggedOut) {
-        // setUser((state) => ({ ...state, isLoggedIn: false }));
-        props.dispatch(logout());
-    }
-  };
       return(
         <Container>
-          <Logout onPress={logOut}>
+          <Logout onPress={() => props.dispatch(logout())}>
           <Text medium bold color="#23a8d9">
               Log out
           </Text>
         </Logout>
+          <Text>Hi user {props.user.id}!</Text>
+          <Text>Hi {props.user.name}</Text>
+          <Image style={{ width: 75, height: 75}} source={{uri: props.user.photoUrl}}/>
         </Container>
       );
 }
 
 function mapStateToProps(state) {
   return {
-    loggedIn: state.loggedIn
+    user: state.user
   };
 }
 
