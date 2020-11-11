@@ -1,22 +1,69 @@
-import React, { useContext }  from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useContext, useEffect }  from 'react';
+import { StyleSheet, View, Image, TouchableOpacity, ScrollView, TextInput, Text } from 'react-native';
 import styled from "styled-components";
 import { connect } from 'react-redux';
-import { logout } from '../redux/actions'
+import { Ionicons } from '@expo/vector-icons';
+import styles from '../../styles.js'
+import { logout, uploadImages, updateAbout, deleteImage} from '../redux/actions'
+import TextStyle from "../components/Text";
 
 function ProfileScreen (props) {
 
+    // useEffect(() => {
+    //   props.dispatch(uploadImages(props.user.images))
+    // }, []);
+
+    const deleteImages = (key) => {
+      console.log("Delete images pressed! :) ");
+      console.log("AND HERE IS THE KEY!", key)
+      props.dispatch(deleteImage(props.user.images, key))
+    }
+  
+    const addImage = () => {
+      props.dispatch(uploadImages(props.user.images))
+    }
+
+  //   <Logout onPress={() => props.dispatch(logout())}>
+  //   <Text medium bold color="#23a8d9">
+  //       Log out
+  //   </Text>
+  // </Logout>
+
       return(
         <Container>
-          <Logout onPress={() => props.dispatch(logout())}>
-          <Text medium bold color="#23a8d9">
-              Log out
-          </Text>
-        </Logout>
-          <Text>Hi user {props.user.id}!</Text>
-          <Text>Hi {props.user.name}</Text>
-          <Image style={{ width: 75, height: 75}} source={{uri: props.user.photoUrl}}/>
-        </Container>
+        <ScrollView>
+        <View style={[styles.container, styles.center]}>
+          <View style={styles.container}>
+            <Container>
+            <Image style={styles.img} source={{uri: props.user.photoUrl}}/>
+            </Container>
+              <TextStyle large semi center color="#917467">{props.user.name}</TextStyle>
+          </View>
+          <View style={styles.imgRow}>
+          {props.user.images.map((uri, key) =>{
+              return (
+                <TouchableOpacity key={key} onPress={() => {deleteImages(key)}}>
+                  <Image style={styles.img} source={{uri: uri}} />
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity style={[styles.img, styles.center]} onPress={addImage}>
+              <Ionicons name="ios-add" size={75}  style={styles.color} />
+            </TouchableOpacity>
+          </View>
+          <TextStyle large semi center color="#917467">My style is...</TextStyle>
+          <TextInput
+            style={styles.textInput}
+            multiline={true}
+            numberOfLines={5}
+            onChangeText={(text) => props.dispatch(updateAbout(text))}
+            value={props.user.aboutMe}/>
+        </View>
+        <TouchableOpacity onPress={ () => props.dispatch(logout()) }>
+          <Text style={ styles.button }>Logout</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      </Container>
       );
 }
 

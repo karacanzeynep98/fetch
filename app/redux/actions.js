@@ -2,8 +2,9 @@ import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
 import aws from '../config/aws';
-import { ImagePicker } from 'expo';
+import * as ImagePicker from 'expo-image-picker';
 import { RNS3 } from 'react-native-aws3';
+import { Alert } from 'react-native';
 
 export function login(user){
   return function(dispatch){
@@ -57,7 +58,7 @@ export function uploadImages(images){
 
 		    const options = {
 		      keyPrefix: "uploads/",
-		      bucket: "tinderexpo",
+		      bucket: "dresscodebucket",
 		      region: "us-east-1",
 		      accessKey: aws.accessKey,
 		      secretKey: aws.secretKey,
@@ -76,3 +77,33 @@ export function uploadImages(images){
 		})
 	}
 }
+
+export function deleteImage(images, key){
+	return function(dispatch){
+    Alert.alert(
+      'Are you sure you want to Delete',
+      '',
+      [
+        {text: 'Ok', onPress: () => {
+		  let array = images
+			array.splice(key, 1)
+			// delete array[key]
+			dispatch({ type: 'UPLOAD_IMAGES', payload: array });
+          firebase.database().ref('cards/' + firebase.auth().currentUser.uid + '/images').set(array);
+        }},
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed')},
+      ],
+      { cancelable: true }
+    )
+	}
+}
+
+export function updateAbout(value){
+	return function(dispatch){
+		dispatch({ type: 'UPDATE_ABOUT', payload: value });
+    setTimeout(function(){  
+			firebase.database().ref('cards/' + firebase.auth().currentUser.uid).update({ aboutMe: value });
+    }, 3000);
+  }
+}
+

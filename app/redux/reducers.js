@@ -1,14 +1,3 @@
-// export default reducers = (state = {
-//   loggedIn: null,
-// }, action) => {
-//   switch (action.type) {
-//     case 'LOGIN': {
-//       return { ...state, loggedIn: action.payload }
-//     }
-//   }
-//   return state;
-// } 
-
 export default reducers = (state = {
     loggedIn: false,
     user: {
@@ -32,6 +21,12 @@ export default reducers = (state = {
       }
       case 'LOGOUT': {
         return { ...state, loggedIn: action.loggedIn }
+      }
+      case 'UPLOAD_IMAGES': {
+        return { ...state, user: {...state.user, images: action.payload } }
+      }
+      case 'UPDATE_ABOUT':      
+        return { ...state, user: { ...state.user, aboutMe : action.payload } 
       }
     }
     return state;
