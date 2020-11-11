@@ -1,6 +1,9 @@
 import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
+import aws from '../config/aws';
+import { ImagePicker } from 'expo';
+import { RNS3 } from 'react-native-aws3';
 
 export function login(user){
   return function(dispatch){
@@ -38,4 +41,38 @@ export function logout(){
     dispatch({ type: 'LOGOUT', loggedIn: false });
     console.log("Successfully signed out");
    }
+}
+
+export function uploadImages(images){
+	return function(dispatch){
+		ImagePicker.launchImageLibraryAsync({ allowsEditing: false }).then(function(result){
+
+		  var array = images
+		  if(result.uri != undefined){
+		    const file = {
+		      uri: result.uri,
+		      name: result.uri,
+		      type: "image/png"
+		    }
+
+		    const options = {
+		      keyPrefix: "uploads/",
+		      bucket: "tinderexpo",
+		      region: "us-east-1",
+		      accessKey: aws.accessKey,
+		      secretKey: aws.secretKey,
+		      successActionStatus: 201
+		    }
+
+		    RNS3.put(file, options).then(function(response){
+		      if (response.status === 201){
+		        array.push(response.body.postResponse.location)
+		        firebase.database().ref('cards/' + firebase.auth().currentUser.uid + '/images').set(array);
+		        dispatch({ type: 'UPLOAD_IMAGES', payload: array });
+		      }
+		    })
+		  }
+
+		})
+	}
 }
