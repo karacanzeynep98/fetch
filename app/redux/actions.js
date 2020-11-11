@@ -107,3 +107,17 @@ export function updateAbout(value){
   }
 }
 
+export function getCards(){
+	return function(dispatch){
+		firebase.database().ref('cards').once('value', (snap) => {
+		  var items = [];
+		  snap.forEach((child) => {
+		    item = child.val();
+		    item.id = child.key;
+		    items.push(item); 
+		  });
+		  dispatch({ type: 'GET_CARDS', payload: items });
+		});
+	}
+}
+

@@ -64,6 +64,10 @@ var styles = StyleSheet.create({
 	  fontSize: 18,
 	  fontWeight: 'bold',
   },
+  card: {
+    width: deviceWidth*.9,
+    height: deviceHeight*.7,
+  }
 })
 
 module.exports = styles

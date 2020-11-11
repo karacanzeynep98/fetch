@@ -9,10 +9,6 @@ import TextStyle from "../components/Text";
 
 function ProfileScreen (props) {
 
-    // useEffect(() => {
-    //   props.dispatch(uploadImages(props.user.images))
-    // }, []);
-
     const deleteImages = (key) => {
       console.log("Delete images pressed! :) ");
       console.log("AND HERE IS THE KEY!", key)
@@ -22,12 +18,6 @@ function ProfileScreen (props) {
     const addImage = () => {
       props.dispatch(uploadImages(props.user.images))
     }
-
-  //   <Logout onPress={() => props.dispatch(logout())}>
-  //   <Text medium bold color="#23a8d9">
-  //       Log out
-  //   </Text>
-  // </Logout>
 
       return(
         <Container>
