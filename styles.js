@@ -1,17 +1,3 @@
-// import React from 'react';
-// import { StyleSheet } from 'react-native';
-
-// var styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center,'
-//   },
-// })
-
-// module.exports = styles
-
 import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 var deviceWidth = Dimensions.get('window').width;
@@ -67,7 +53,18 @@ var styles = StyleSheet.create({
   card: {
     width: deviceWidth*.9,
     height: deviceHeight*.7,
-  }
+    borderRadius: 50,
+  },
+  cardDescription: {
+    padding: 15,
+    justifyContent: 'flex-end',
+    flex: 1,
+  },
+  cardInfo: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+  },
 })
 
 module.exports = styles
