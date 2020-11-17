@@ -1,29 +1,50 @@
-import React, { useContext }  from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import styled from "styled-components";
+import React, { useContext, useState, useEffect }  from 'react';
+import firebase from "firebase";
+import { connect } from 'react-redux';
+import styles from '../../styles.js'
 
-import { UserContext } from "../context/UserContext";
-import { FirebaseContext } from "../context/FirebaseContext";
+import { 
+  Text, 
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Image
+} from 'react-native';
 
-export default MatchesScreen = () => {
+function MatchesScreen (props) {
+
+  const [chats, setChats] = useState([]);
+
+  useEffect(() => {
+    firebase.database().ref('cards/' + props.user.id + '/chats').on('value', (snap) => {
+      var items = [];
+      snap.forEach((child) => {
+        item = child.val();
+        items.push(item); 
+      });
+      setChats(items.reverse());
+    });
+  }, [])
 
       return(
-        <Container>
-          <Logout onPress={logOut}>
-          <Text medium bold color="#23a8d9">
-              Matches
-          </Text>
-        </Logout>
-        </Container>
+          <View style={styles.container} >
+           <ScrollView>
+             {chats.map((uri)=>{
+               return (
+                 <TouchableOpacity style={styles.imgRow} >
+                   <Image style={styles.img} source={{uri: uri.user.photoUrl}} />
+                   <Text style={[styles.bold, styles.center]}>{uri.user.name}</Text>
+                 </TouchableOpacity>
+               );
+             })}
+           </ScrollView>
+          </View>
       );
 }
 
-const Container = styled.View`
-    align-items: center;
-    margin-top: 64px;
-    flex: 1;
-`;
-
-const Logout = styled.TouchableOpacity`
-    margin-bottom: 32px;
-`;
+function mapStateToProps(state) {
+  return {
+    user: state.user
+  };
+}
+export default connect(mapStateToProps)(MatchesScreen);

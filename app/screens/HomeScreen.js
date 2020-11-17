@@ -5,8 +5,6 @@ import SwipeCards from 'react-native-swipe-cards'
 import Cards from '../components/Cards.js'
 import NoCards from '../components/NoCards.js'
 import firebase from "firebase";
-import "firebase/auth";
-import "firebase/firestore";
 
 function HomeScreen (props) {
 
@@ -15,11 +13,41 @@ function HomeScreen (props) {
     props.dispatch(getCards())
   }, [])
 
+  const checkMatch = (card) => {
+    console.log("Check match called");
+    firebase.database().ref('cards/' + card.id + '/swipes/' + props.user.id).once('value', (snap) => {
+      if(snap.val() == true){
+        var me = {
+          id: props.user.id,
+          photoUrl: props.user.photoUrl,
+          name: props.user.name
+        }
+        var user = {
+          id: card.id,
+          photoUrl: card.photoUrl,
+          name: card.name
+        }
+        firebase.database().ref('cards/' + props.user.id + '/chats/' + card.id).set({user: user});
+        firebase.database().ref('cards/' + card.id + '/chats/' + props.user.id).set({user: me});
+      }
+    });
+  }
+
   const handleYup = (card) => {
     console.log(`Yup for ${card.name}`)
     console.log('DOES THIS WORK', props.user.id);
-    firebase.database().ref('cards/' + props.user.id + '/swipes').update({ [card.id]: true });
+    firebase.database().ref('cards/' + props.user.id + '/swipes').update({ [card.id]: true }, 
+    function(error) {
+      if (error) {
+        // The write failed...
+        console.log("Write failed", error);
+      } else {
+        // Data saved successfully!
+        checkMatch(card);
+      }
+    });
   }
+
   const handleNope = (card) => {
     console.log(`Nope for ${card.name}`)
     firebase.database().ref('cards/' + props.user.id + '/swipes').update({ [card.id]: false });

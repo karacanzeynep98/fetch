@@ -6,6 +6,7 @@ import HomeScreen from "../screens/HomeScreen";
 import ChatScreen from "../screens/ChatScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 // import PostScreen from "../screens/ProfileScreen";
+import MatchesScreen from "../screens/MatchesScreen";
 
 export default MainStackScreens = () => {
     const MainStack = createBottomTabNavigator();
@@ -46,7 +47,7 @@ export default MainStackScreens = () => {
     return (
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions}>
             <MainStack.Screen name="Home" component={HomeScreen} />
-            <MainStack.Screen name="Chat" component={ChatScreen} />
+            <MainStack.Screen name="Chat" component={MatchesScreen} />
             <MainStack.Screen name="Profile" component={ProfileScreen} />
         </MainStack.Navigator>
     );
