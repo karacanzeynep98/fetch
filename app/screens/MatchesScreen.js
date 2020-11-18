@@ -33,7 +33,7 @@ function MatchesScreen (props) {
            <ScrollView>
              {chats.map((uri)=>{
                return (
-                 <TouchableOpacity style={styles.imgRow} onPress={() => props.navigation.navigate("Chat", {user: uri.user})}>
+                 <TouchableOpacity key={uri.user} style={styles.imgRow} onPress={() => props.navigation.navigate("Chat", {user: uri.user})}>
                    <Image style={styles.imgChat} source={{uri: uri.user.photoUrl}} />
                    <Text style={[styles.bold, styles.center]}>{uri.user.name}</Text>
                  </TouchableOpacity>

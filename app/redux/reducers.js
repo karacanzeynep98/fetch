@@ -33,8 +33,14 @@ export default reducers = (state = {
         return { ...state, cards: action.payload
       }
       case 'GET_LOCATION':      
-      return { ...state, user: { ...state.user, geocode : action.payload } 
-    }
+        return { ...state, user: { ...state.user, geocode : action.payload }
+      }
+      case 'ALLOW_NOTIFICATIONS':      
+        return { ...state, user: { ...state.user, token : action.payload } 
+      }
+      case 'LET_NOTIFICATIONS':      
+      return { ...state, user: { ...state.user, token : action.payload } 
+      }
     }
     return state;
   }

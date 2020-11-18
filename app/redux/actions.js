@@ -5,6 +5,7 @@ import aws from '../config/aws';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications'
 import Geohash from 'latlon-geohash';
 
 import { RNS3 } from 'react-native-aws3';
@@ -31,7 +32,8 @@ export function login(user){
 
 		firebase.database().ref('cards/').child(user.uid).once('value', function(snapshot){
 		  if(snapshot.val() !== null){
-		    dispatch({ type: 'LOGIN', user: snapshot.val(), loggedIn: true });
+			dispatch({ type: 'LOGIN', user: snapshot.val(), loggedIn: true });
+			dispatch(allowNotifications())
 		  } else {
 		    firebase.database().ref('cards/' + user.uid ).update(params);
 		    dispatch({ type: 'LOGIN', user: params, loggedIn: true });
@@ -138,4 +140,113 @@ export function getLocation(){
 		  }
 		})
 	}
+}
+
+export function allowNotifications(){
+	console.log("CALLED ALLOW NOTIFICATIONS");
+
+	return function(dispatch){
+
+	Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(status) {
+		if (status !== 'granted') {
+			Permissions.askAsync(Permissions.NOTIFICATIONS).then(function(result){
+
+			if (result.status !== 'granted') {
+				console.log('not granted');
+				alert('Failed to get push token for push notification!');
+				return;
+			  }
+
+			  if (result.status === 'granted') {
+				console.log("IS IT GRANTED?");
+				Notifications.getExpoPushTokenAsync().then(function(token){
+				  firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
+				  dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
+				})
+			  }
+			})
+			finalStatus = status;
+		}
+	})
+
+	}
+}
+
+
+
+
+		// Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(result){
+		// 	console.log("NOT GRANTED?");
+		//   if (result.status === 'granted') {
+		// 	console.log("IS IT GRANTED?");
+		//     Notifications.getExpoPushTokenAsync().then(function(token){
+		//       firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
+		//       dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
+		//     })
+		//   }
+		// })
+// 	}
+// }
+
+
+
+	// return function(dispatch){
+	// 	if (Constants.isDevice) {
+	// 	//   const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+	// 	Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(status) {
+	// 		let finalStatus = status;
+	// 	  	if (status !== 'granted') {
+	// 		// const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+	// 		Permissions.askAsync(Permissions.NOTIFICATIONS).then(function(status) {
+	// 			finalStatus = status;
+	// 			console.log("SET FINAL STATUS TO STATUS")
+	// 			// dispatch({ type: 'LET_NOTIFICATIONS', payload: token });
+
+	// 			if (finalStatus !== 'granted') {
+	// 				alert('Failed to get push token for push notification!');
+	// 				return;
+	// 			  }
+	// 			  Notifications.getExpoPushTokenAsync().then(function(token){
+	// 				firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
+	// 				dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
+	// 			})
+	// 		})
+	// 	  }
+		
+	// return function(dispatch){
+	// 	Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(result){
+	// 		console.log("NOT GRANTED?");
+	// 	  if (result.status === 'granted') {
+	// 		console.log("IS IT GRANTED?");
+
+
+	// 	    Notifications.getExpoPushTokenAsync().then(function(token){
+	// 	      firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
+	// 	      dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
+	// 	    })
+	// 	  }
+	// 	})
+	// }
+// }
+
+export function sendNotification(id, name, text){
+  return function(dispatch){
+    firebase.database().ref('cards/' + id).once('value', (snap) => {
+      if(snap.val().token != null){
+        return fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: snap.val().token,
+            title: name,
+            body: text,
+          }),
+        });
+
+      }
+    });
+  }
 }
