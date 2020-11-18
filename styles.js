@@ -21,6 +21,13 @@ var styles = StyleSheet.create({
   	margin: 10,
     backgroundColor: '#fff',
   },
+  imgChat: {
+  	width: 90,
+  	height: 90,
+    margin: 10,
+    borderRadius: 40,
+    backgroundColor: '#fff',
+  },
   imgRow: {
 		flexWrap: 'wrap',
 		flexDirection: 'row',

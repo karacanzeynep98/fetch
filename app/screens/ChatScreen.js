@@ -1,18 +1,56 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import styles from '../../styles.js'
+import * as firebase from 'firebase';
+import { sendNotification } from '../redux/actions'
+import { connect } from 'react-redux';
+import { GiftedChat } from 'react-native-gifted-chat'
 
-export default ChatScreen = () => {
-      return(
-        <View style={styles.container}>
-          <Text> This is my Chat screen </Text>
-        </View>
-      );
+class Chat extends React.Component {
+  state = {
+    messages: [],
+  }
+
+  componentDidMount() {
+    firebase.database().ref('cards/' + this.props.user.id + '/chats/' + this.props.route.params.user.id).on('value', (snap) => {
+      var items = [];
+      snap.forEach((child) => {
+        if(child.val().key != 'user'){
+          item = child.val();
+          items.push(item); 
+        }
+      });
+      this.setState({ messages: items.reverse() });
+    });
+  }
+
+  onSend(messages = []) {
+    // this.props.dispatch(sendNotification(this.props.route.params.user.id, messages[0].user.name, messages[0].text))
+    this.setState(previousState => ({
+      messages: GiftedChat.append(previousState.messages, messages),
+    }))
+    firebase.database().ref('cards/' + this.props.user.id + '/chats/' + this.props.route.params.user.id).push(messages[0]);
+    firebase.database().ref('cards/' + this.props.route.params.user.id + '/chats/' + this.props.user.id).push(messages[0]);
+  }
+
+  render() {
+    return (
+      <GiftedChat
+        messages={this.state.messages}
+        onSend={messages => this.onSend(messages)}
+        user={{
+          _id: this.props.user.id,
+          name: this.props.user.name,
+          avatar: this.props.user.photoUrl
+        }}
+      />
+    )
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center'
-  }
-});
+function mapStateToProps(state) {
+  return {
+    user: state.user
+  };
+}
+
+export default connect(mapStateToProps)(Chat);

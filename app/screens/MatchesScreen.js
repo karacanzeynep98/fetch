@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect }  from 'react';
 import firebase from "firebase";
+import styled from "styled-components";
 import { connect } from 'react-redux';
 import styles from '../../styles.js'
 
@@ -27,18 +28,20 @@ function MatchesScreen (props) {
   }, [])
 
       return(
+        <Container>
           <View style={styles.container} >
            <ScrollView>
              {chats.map((uri)=>{
                return (
-                 <TouchableOpacity style={styles.imgRow} >
-                   <Image style={styles.img} source={{uri: uri.user.photoUrl}} />
+                 <TouchableOpacity style={styles.imgRow} onPress={() => props.navigation.navigate("Chat", {user: uri.user})}>
+                   <Image style={styles.imgChat} source={{uri: uri.user.photoUrl}} />
                    <Text style={[styles.bold, styles.center]}>{uri.user.name}</Text>
                  </TouchableOpacity>
                );
              })}
            </ScrollView>
           </View>
+          </Container>
       );
 }
 
@@ -48,3 +51,9 @@ function mapStateToProps(state) {
   };
 }
 export default connect(mapStateToProps)(MatchesScreen);
+
+const Container = styled.View`
+    align-items: center;
+    margin-top: 64px;
+    flex: 1;
+`;

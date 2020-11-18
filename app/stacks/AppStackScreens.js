@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AuthStackScreens from "./AuthStackScreens";
 import MainStackScreens from "./MainStackScreens";
 import LoadingScreen from "../screens/LoadingScreen";
+import ChatScreen from "../screens/ChatScreen";
 import { connect } from 'react-redux';
 
 import { UserContext } from "../context/UserContext";
@@ -21,6 +22,7 @@ function AppStackScreens (props) {
             ) : (
                 <AppStack.Screen name="Auth" component={AuthStackScreens} />
             )}
+            <AppStack.Screen name="Chat" component={ChatScreen} />
         </AppStack.Navigator>
     );
 };

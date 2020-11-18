@@ -5,7 +5,6 @@ import { Ionicons, Foundation } from "@expo/vector-icons";
 import HomeScreen from "../screens/HomeScreen";
 import ChatScreen from "../screens/ChatScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-// import PostScreen from "../screens/ProfileScreen";
 import MatchesScreen from "../screens/MatchesScreen";
 
 export default MainStackScreens = () => {
@@ -28,7 +27,7 @@ export default MainStackScreens = () => {
                     iconName = "magnifying-glass";
                     return <Foundation name={iconName} size={30} color={focused ? "#ffffff" : "#666666"} />;
 
-                case "Chat":
+                case "Match":
                     iconName = "ios-chatboxes";
                     break;
 
@@ -47,7 +46,7 @@ export default MainStackScreens = () => {
     return (
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions}>
             <MainStack.Screen name="Home" component={HomeScreen} />
-            <MainStack.Screen name="Chat" component={MatchesScreen} />
+            <MainStack.Screen name="Match" component={MatchesScreen} />
             <MainStack.Screen name="Profile" component={ProfileScreen} />
         </MainStack.Navigator>
     );
