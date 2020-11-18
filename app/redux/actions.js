@@ -3,6 +3,10 @@ import "firebase/auth";
 import "firebase/firestore";
 import aws from '../config/aws';
 import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
+import Geohash from 'latlon-geohash';
+
 import { RNS3 } from 'react-native-aws3';
 import { Alert } from 'react-native';
 
@@ -32,6 +36,7 @@ export function login(user){
 		    firebase.database().ref('cards/' + user.uid ).update(params);
 		    dispatch({ type: 'LOGIN', user: params, loggedIn: true });
 		  }
+		  dispatch(getLocation())
 		})
   }
 }
@@ -107,9 +112,9 @@ export function updateAbout(value){
   }
 }
 
-export function getCards(){
+export function getCards(geocode){
 	return function(dispatch){
-		firebase.database().ref('cards').once('value', (snap) => {
+		firebase.database().ref('cards').orderByChild("geocode").equalTo(geocode).once('value', (snap) => {
 		  var items = [];
 		  snap.forEach((child) => {
 		    item = child.val();
@@ -121,3 +126,16 @@ export function getCards(){
 	}
 }
 
+export function getLocation(){
+	return function(dispatch){
+		Permissions.askAsync(Permissions.LOCATION).then(function(result){
+		  if(result){
+		    Location.getCurrentPositionAsync({}).then(function(location){
+		      var geocode = Geohash.encode(location.coords.latitude, location.coords.longitude, 4)
+		      firebase.database().ref('cards/' + firebase.auth().currentUser.uid).update({geocode: geocode});
+		      dispatch({ type: 'GET_LOCATION', payload: geocode });
+		    })
+		  }
+		})
+	}
+}

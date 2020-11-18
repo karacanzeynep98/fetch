@@ -10,7 +10,7 @@ function HomeScreen (props) {
 
   useEffect(() => {
     console.log("These are my props", JSON.stringify(props));
-    props.dispatch(getCards())
+    props.dispatch(getCards(props.user.geocode))
   }, [])
 
   const checkMatch = (card) => {
