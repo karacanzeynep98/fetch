@@ -17,9 +17,8 @@ var styles = StyleSheet.create({
   },
   img: {
   	width: 90,
-  	height: 90,
-  	margin: 10,
-    backgroundColor: '#fff',
+    height: 90,
+    resizeMode: "contain",
   },
   imgChat: {
   	width: 90,
@@ -72,6 +71,10 @@ var styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
+  border: {
+    borderTopColor: '#bbb', 
+    borderTopWidth: 2, 
+  }
 })
 
 module.exports = styles

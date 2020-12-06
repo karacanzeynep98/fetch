@@ -118,16 +118,6 @@ class LoginScreen extends Component {
             </View>
             </ImageBackground>
           );
-        // return (
-        //     <View style={styles.container}>
-        //         <Button
-        //         title="Sign in with Google"
-        //         onPress={() => {
-        //             console.log("PRESSED");
-        //             this.signInWithGoogleAsync()}}
-        //         />
-        //     </View>
-        // );
     }
     
     

@@ -131,7 +131,9 @@ export function getCards(geocode){
 export function getLocation(){
 	return function(dispatch){
 		Permissions.askAsync(Permissions.LOCATION).then(function(result){
+			console.log("location permission asked")
 		  if(result){
+			  console.log("GOT LOCATION")
 		    Location.getCurrentPositionAsync({}).then(function(location){
 		      var geocode = Geohash.encode(location.coords.latitude, location.coords.longitude, 4)
 		      firebase.database().ref('cards/' + firebase.auth().currentUser.uid).update({geocode: geocode});
@@ -172,65 +174,9 @@ export function allowNotifications(){
 	}
 }
 
-
-
-
-		// Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(result){
-		// 	console.log("NOT GRANTED?");
-		//   if (result.status === 'granted') {
-		// 	console.log("IS IT GRANTED?");
-		//     Notifications.getExpoPushTokenAsync().then(function(token){
-		//       firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
-		//       dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
-		//     })
-		//   }
-		// })
-// 	}
-// }
-
-
-
-	// return function(dispatch){
-	// 	if (Constants.isDevice) {
-	// 	//   const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-	// 	Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(status) {
-	// 		let finalStatus = status;
-	// 	  	if (status !== 'granted') {
-	// 		// const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-	// 		Permissions.askAsync(Permissions.NOTIFICATIONS).then(function(status) {
-	// 			finalStatus = status;
-	// 			console.log("SET FINAL STATUS TO STATUS")
-	// 			// dispatch({ type: 'LET_NOTIFICATIONS', payload: token });
-
-	// 			if (finalStatus !== 'granted') {
-	// 				alert('Failed to get push token for push notification!');
-	// 				return;
-	// 			  }
-	// 			  Notifications.getExpoPushTokenAsync().then(function(token){
-	// 				firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
-	// 				dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
-	// 			})
-	// 		})
-	// 	  }
-		
-	// return function(dispatch){
-	// 	Permissions.getAsync(Permissions.NOTIFICATIONS).then(function(result){
-	// 		console.log("NOT GRANTED?");
-	// 	  if (result.status === 'granted') {
-	// 		console.log("IS IT GRANTED?");
-
-
-	// 	    Notifications.getExpoPushTokenAsync().then(function(token){
-	// 	      firebase.database().ref('cards/' + firebase.auth().currentUser.uid ).update({ token: token });
-	// 	      dispatch({ type: 'ALLOW_NOTIFICATIONS', payload: token });
-	// 	    })
-	// 	  }
-	// 	})
-	// }
-// }
-
 export function sendNotification(id, name, text){
   return function(dispatch){
+	console.log('SENDING NOTIFICATION')
     firebase.database().ref('cards/' + id).once('value', (snap) => {
       if(snap.val().token != null){
         return fetch('https://exp.host/--/api/v2/push/send', {

@@ -38,9 +38,6 @@ export default reducers = (state = {
       case 'ALLOW_NOTIFICATIONS':      
         return { ...state, user: { ...state.user, token : action.payload } 
       }
-      case 'LET_NOTIFICATIONS':      
-      return { ...state, user: { ...state.user, token : action.payload } 
-      }
     }
     return state;
   }

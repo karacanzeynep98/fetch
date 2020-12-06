@@ -1,8 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Image } from 'react-native';
 import styled from "styled-components";
 import { connect } from 'react-redux';
 import { login } from '../redux/actions'
 import Text from "../components/Text";
+import styles from '../../styles.js'
 
 import config from "../config/firebase";
 import firebase from "firebase";
@@ -191,7 +193,8 @@ function SignInScreen (props) {
     return (
         <Container>
             <Main>
-                <Text huge semi center>fetch</Text>
+                <Image source={require('/Users/zeynepkaracan/Desktop/DressCode/app/assets/TRIAL3.png')}/>
+                <Text huge semi center margin="36px">fetch</Text>
             </Main>
             <SignInContainer>
             <GoogleSignIn onPress={signInGoogle} disabled={loading}>
@@ -257,7 +260,8 @@ const FacebookSignIn = styled.TouchableOpacity`
 `;
 
 const Main = styled.View`
-    margin-top: 324px;
+    margin-top: 204px;
+    align-items: center;
 `;
 
 const SignInContainer = styled.View`

@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { connect } from 'react-redux';
-import { getCards } from '../redux/actions'
+import { getCards} from '../redux/actions'
 import SwipeCards from 'react-native-swipe-cards'
 import Cards from '../components/Cards.js'
 import NoCards from '../components/NoCards.js'
