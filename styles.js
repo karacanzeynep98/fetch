@@ -35,9 +35,10 @@ var styles = StyleSheet.create({
   },
   textInput: {
     width: deviceWidth,
-    padding: 15,
+    padding: 20,
     backgroundColor: '#FFEFE8',
-    height: 100
+    height: 100,
+    marginTop: 20,
   },
   bold: {
     padding: 10,
@@ -74,6 +75,7 @@ var styles = StyleSheet.create({
   border: {
     borderTopColor: '#bbb', 
     borderTopWidth: 2, 
+    padding: 35,
   }
 })
 
