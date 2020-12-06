@@ -58,13 +58,16 @@ const Text = styled.Text`
         }
     }}
 
-    ${({ center, right }) => {
+    ${({ center, right, left}) => {
         switch (true) {
             case center:
                 return `text-align: center;`;
 
             case right:
                 return `text-align: right`;
+
+            case left:
+                return `text-align: left`
 
             default:
                 return `text-align: left`;
