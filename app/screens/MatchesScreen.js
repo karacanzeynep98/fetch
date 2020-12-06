@@ -3,10 +3,9 @@ import firebase from "firebase";
 import styled from "styled-components";
 import { connect } from 'react-redux';
 import styles from '../../styles.js'
-import TextComponent from "../components/Text";
+import Text from "../components/Text";
 
 import { 
-  Text,
   View,
   ScrollView,
   TouchableOpacity,
@@ -31,14 +30,13 @@ function MatchesScreen (props) {
       return(
         <Container>
           <View style={styles.container} >
-          <TextComponent big semi center>Chat with your Matches</TextComponent>
+          <Text big semi center>Chat with your Matches</Text>
            <ScrollView>
              {chats.map((uri)=>{
                return (
                  <TouchableOpacity key={uri.user} style={styles.imgRow, styles.border} onPress={() => props.navigation.navigate("Chat", {user: uri.user})}>
                    <Image style={styles.imgChat} source={{uri: uri.user.photoUrl}} />
-                   {/* <TextComponent style={[styles.bold, styles.center]}>{uri.user.name}</TextComponent> */}
-                   <TextComponent medium semi left>{uri.user.name}</TextComponent>
+                   <Text medium semi left>{uri.user.name}</Text>
                  </TouchableOpacity>
                );
              })}

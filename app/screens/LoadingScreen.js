@@ -15,7 +15,7 @@ function LoadingScreen (props) {
 
     useEffect(() => {
         setTimeout(async ()  => {
-            // setUser((state) => ({...state, isLoggedIn: false}))
+            setUser((state) => ({...state, isLoggedIn: false}))
             props.dispatch(login(false));
         }, 1500)
     }, [])

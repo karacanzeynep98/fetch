@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AuthStackScreens from "./AuthStackScreens";
 import MainStackScreens from "./MainStackScreens";
 import LoadingScreen from "../screens/LoadingScreen";
-import ChatScreen from "../screens/ChatScreen";
 import { connect } from 'react-redux';
 
 import { UserContext } from "../context/UserContext";
@@ -15,14 +14,13 @@ function AppStackScreens (props) {
 
     return (
         <AppStack.Navigator headerMode="none">
-                {props.loggedIn === null ? (
+                {user.isLoggedIn === null ? (
                 <AppStack.Screen name="Loading" component={LoadingScreen} />
             ) : props.loggedIn ? (
                 <AppStack.Screen name="Main" component={MainStackScreens} />
             ) : (
                 <AppStack.Screen name="Auth" component={AuthStackScreens} />
             )}
-            <AppStack.Screen name="Chat" component={ChatScreen} />
         </AppStack.Navigator>
     );
 };

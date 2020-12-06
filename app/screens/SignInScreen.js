@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { connect } from 'react-redux';
 import { login } from '../redux/actions'
 import Text from "../components/Text";
-import styles from '../../styles.js'
 
 import config from "../config/firebase";
 import firebase from "firebase";
