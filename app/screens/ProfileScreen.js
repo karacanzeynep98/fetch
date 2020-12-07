@@ -41,7 +41,7 @@ function ProfileScreen (props) {
               <Ionicons name="ios-add" size={75}  style={styles.color} />
             </TouchableOpacity>
           </View>
-          <TextStyle large semi center color="#917467" margin="12">My style is...</TextStyle>
+          <TextStyle large semi center color="#917467" margin="12px">My style is...</TextStyle>
           <TextInput
             style={styles.textInput}
             multiline={true}
