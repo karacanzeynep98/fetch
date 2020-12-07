@@ -1,4 +1,4 @@
 export default aws = {
-	secretKey: 'DUMMY',
-	accessKey: 'DUMMY'
+	secretKey: 'dummy',
+	accessKey: 'dummy'
 };

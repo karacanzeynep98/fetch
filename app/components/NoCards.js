@@ -35,12 +35,12 @@ class NoCards extends React.Component {
             <Text medium semi center margin="24px">Match with people that share your style.</Text>
             <Text large semi center margin="24px">Chat</Text>
             <View style={styles.container}>
-            <Image style={styles.logo} source={require('/Users/zeynepkaracan/Desktop/DressCode/app/assets/TRIAL3.png')}/>
+            <Image style={styles.logoChat} source={require('/Users/zeynepkaracan/Desktop/DressCode/app/assets/pnghut_chat-box-online-area.png')}/>
             </View>
             <Text medium semi center margin="24px">Chat to see if you have matching items.</Text>
             <Text large semi center margin="24px">Fetch</Text>
             <View style={styles.container}>
-            <Image style={styles.logo} source={require('/Users/zeynepkaracan/Desktop/DressCode/app/assets/TRIAL3.png')}/>
+            <Image style={styles.logoSwap} source={require('/Users/zeynepkaracan/Desktop/DressCode/app/assets/hiclipart.com.png')}/>
             </View>
             <Text medium semi center margin="24px">Swap to get new free clothes.</Text>
             <InviteFriends onPress={() => {this.setState({show: false})}}>
@@ -74,4 +74,12 @@ const styles = StyleSheet.create({
     width: 78,
     height: 85,
   },
+  logoSwap: {
+    width: 90,
+    height: 90,
+  },
+  logoChat: {
+    width: 75,
+    height: 66,
+  }
 });
